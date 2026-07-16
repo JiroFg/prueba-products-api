@@ -1,6 +1,8 @@
 package entities
 
-import "errors"
+import (
+	"github.com/JiroFg/prueba-products-api/internal/domain/exceptions"
+)
 
 type Product struct {
 	ID        string
@@ -12,13 +14,22 @@ type Product struct {
 
 func (p *Product) Validate() error {
 	if p.Name == "" {
-		return errors.New("Name requerido")
+		return &exceptions.FieldError{
+			FieldName: "Name",
+			Message:   "Requerido",
+		}
 	}
 	if p.Price <= 0 {
-		return errors.New("Price no puede ser menor o igual a cero")
+		return &exceptions.FieldError{
+			FieldName: "Price",
+			Message:   "No puede ser menor o igual a cero",
+		}
 	}
 	if p.Stock < 0 {
-		return errors.New("Stock no puede ser menor o igual a cero")
+		return &exceptions.FieldError{
+			FieldName: "Stock",
+			Message:   "No puede ser menor o igual a cero",
+		}
 	}
 	return nil
 }
@@ -31,12 +42,18 @@ type UpdateProduct struct {
 func (u *UpdateProduct) Validate() error {
 	if u.Name != nil {
 		if *u.Name == "" {
-			return errors.New("Name no puede ser vacio")
+			return &exceptions.FieldError{
+				FieldName: "Name",
+				Message:   "No puede ser vacio",
+			}
 		}
 	}
 	if u.Price != nil {
 		if *u.Price <= 0 {
-			return errors.New("Price no puede ser menor o igual a cero")
+			return &exceptions.FieldError{
+				FieldName: "Price",
+				Message:   "No puede ser menor o igual a cero",
+			}
 		}
 	}
 	return nil
