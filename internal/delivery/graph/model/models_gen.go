@@ -3,18 +3,17 @@
 package model
 
 type CreateProductInput struct {
-	Name      string  `json:"name"`
-	Price     float64 `json:"price"`
-	Stock     int32   `json:"stock"`
-	CreatedAt string  `json:"createdAt"`
-}
-
-type DeleteProductResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
+	Name  string  `json:"name"`
+	Price float64 `json:"price"`
+	Stock int32   `json:"stock"`
 }
 
 type Mutation struct {
+}
+
+type ProductResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
 }
 
 type Query struct {

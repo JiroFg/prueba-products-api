@@ -19,7 +19,6 @@ input CreateProductInput {
   name: String!
   price: Float!
   stock: Int!
-  createdAt: String!
 }
 
 input UpdateProductInput {
@@ -27,13 +26,13 @@ input UpdateProductInput {
   price: Float
 }
 
-type DeleteProductResponse {
+type ProductResponse {
   success: Boolean!
   message: String!
 }
 
 type Mutation {
-  createProduct(input: CreateProductInput!): Product!
-  updateProduct(id: ID!, input: UpdateProductInput!): Product!
-  deleteProduct(id: ID!): DeleteProductResponse!
+  createProduct(input: CreateProductInput!): ProductResponse!
+  updateProduct(id: ID!, input: UpdateProductInput!): ProductResponse!
+  deleteProduct(id: ID!): ProductResponse!
 }

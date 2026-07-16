@@ -37,11 +37,6 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
-	DeleteProductResponse struct {
-		Message func(childComplexity int) int
-		Success func(childComplexity int) int
-	}
-
 	Mutation struct {
 		CreateProduct func(childComplexity int, input model.CreateProductInput) int
 		DeleteProduct func(childComplexity int, id string) int
@@ -56,6 +51,11 @@ type ComplexityRoot struct {
 		Stock     func(childComplexity int) int
 	}
 
+	ProductResponse struct {
+		Message func(childComplexity int) int
+		Success func(childComplexity int) int
+	}
+
 	Query struct {
 		Product  func(childComplexity int, id string) int
 		Products func(childComplexity int) int
@@ -67,9 +67,9 @@ type ComplexityRoot struct {
 // region    ************************** generated!.gotpl **************************
 
 type MutationResolver interface {
-	CreateProduct(ctx context.Context, input model.CreateProductInput) (*entities.Product, error)
-	UpdateProduct(ctx context.Context, id string, input model.UpdateProductInput) (*entities.Product, error)
-	DeleteProduct(ctx context.Context, id string) (*model.DeleteProductResponse, error)
+	CreateProduct(ctx context.Context, input model.CreateProductInput) (*model.ProductResponse, error)
+	UpdateProduct(ctx context.Context, id string, input model.UpdateProductInput) (*model.ProductResponse, error)
+	DeleteProduct(ctx context.Context, id string) (*model.ProductResponse, error)
 }
 type QueryResolver interface {
 	Product(ctx context.Context, id string) (*entities.Product, error)
@@ -93,19 +93,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	ec := newExecutionContext(nil, e, nil)
 	_ = ec
 	switch typeName + "." + field {
-
-	case "DeleteProductResponse.message":
-		if e.ComplexityRoot.DeleteProductResponse.Message == nil {
-			break
-		}
-
-		return e.ComplexityRoot.DeleteProductResponse.Message(childComplexity), true
-	case "DeleteProductResponse.success":
-		if e.ComplexityRoot.DeleteProductResponse.Success == nil {
-			break
-		}
-
-		return e.ComplexityRoot.DeleteProductResponse.Success(childComplexity), true
 
 	case "Mutation.createProduct":
 		if e.ComplexityRoot.Mutation.CreateProduct == nil {
@@ -171,6 +158,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.ComplexityRoot.Product.Stock(childComplexity), true
+
+	case "ProductResponse.message":
+		if e.ComplexityRoot.ProductResponse.Message == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ProductResponse.Message(childComplexity), true
+	case "ProductResponse.success":
+		if e.ComplexityRoot.ProductResponse.Success == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ProductResponse.Success(childComplexity), true
 
 	case "Query.product":
 		if e.ComplexityRoot.Query.Product == nil {
@@ -296,7 +296,6 @@ input CreateProductInput {
   name: String!
   price: Float!
   stock: Int!
-  createdAt: String!
 }
 
 input UpdateProductInput {
@@ -304,15 +303,15 @@ input UpdateProductInput {
   price: Float
 }
 
-type DeleteProductResponse {
+type ProductResponse {
   success: Boolean!
   message: String!
 }
 
 type Mutation {
-  createProduct(input: CreateProductInput!): Product!
-  updateProduct(id: ID!, input: UpdateProductInput!): Product!
-  deleteProduct(id: ID!): DeleteProductResponse!
+  createProduct(input: CreateProductInput!): ProductResponse!
+  updateProduct(id: ID!, input: UpdateProductInput!): ProductResponse!
+  deleteProduct(id: ID!): ProductResponse!
 }
 `, BuiltIn: false},
 }
@@ -321,16 +320,6 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // childFields_* functions provide shared child field context lookups.
 // Each function is generated once per unique object type, deduplicating the
 // switch statements that were previously inlined in every fieldContext_* function.
-
-func (ec *executionContext) childFields_DeleteProductResponse(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-	switch field.Name {
-	case "success":
-		return ec.fieldContext_DeleteProductResponse_success(ctx, field)
-	case "message":
-		return ec.fieldContext_DeleteProductResponse_message(ctx, field)
-	}
-	return nil, fmt.Errorf("no field named %q was found under type DeleteProductResponse", field.Name)
-}
 
 func (ec *executionContext) childFields_Product(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 	switch field.Name {
@@ -346,6 +335,16 @@ func (ec *executionContext) childFields_Product(ctx context.Context, field graph
 		return ec.fieldContext_Product_createdAt(ctx, field)
 	}
 	return nil, fmt.Errorf("no field named %q was found under type Product", field.Name)
+}
+
+func (ec *executionContext) childFields_ProductResponse(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+	switch field.Name {
+	case "success":
+		return ec.fieldContext_ProductResponse_success(ctx, field)
+	case "message":
+		return ec.fieldContext_ProductResponse_message(ctx, field)
+	}
+	return nil, fmt.Errorf("no field named %q was found under type ProductResponse", field.Name)
 }
 
 func (ec *executionContext) childFields___Directive(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
@@ -602,52 +601,6 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _DeleteProductResponse_success(ctx context.Context, field graphql.CollectedField, obj *model.DeleteProductResponse) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_DeleteProductResponse_success(ctx, field)
-		},
-		func(ctx context.Context) (any, error) {
-			return obj.Success, nil
-		},
-		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
-			return ec.marshalNBoolean2bool(ctx, selections, v)
-		},
-		true,
-		true,
-	)
-}
-func (ec *executionContext) fieldContext_DeleteProductResponse_success(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("DeleteProductResponse", field, false, false, errors.New("field of type Boolean does not have child fields"))
-}
-
-func (ec *executionContext) _DeleteProductResponse_message(ctx context.Context, field graphql.CollectedField, obj *model.DeleteProductResponse) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.fieldContext_DeleteProductResponse_message(ctx, field)
-		},
-		func(ctx context.Context) (any, error) {
-			return obj.Message, nil
-		},
-		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
-			return ec.marshalNString2string(ctx, selections, v)
-		},
-		true,
-		true,
-	)
-}
-func (ec *executionContext) fieldContext_DeleteProductResponse_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	return graphql.NewScalarFieldContext("DeleteProductResponse", field, false, false, errors.New("field of type String does not have child fields"))
-}
-
 func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -661,8 +614,8 @@ func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field g
 			return ec.Resolvers.Mutation().CreateProduct(ctx, fc.Args["input"].(model.CreateProductInput))
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *entities.Product) graphql.Marshaler {
-			return ec.marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProduct(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v *model.ProductResponse) graphql.Marshaler {
+			return ec.marshalNProductResponse2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProductResponse(ctx, selections, v)
 		},
 		true,
 		true,
@@ -675,7 +628,7 @@ func (ec *executionContext) fieldContext_Mutation_createProduct(ctx context.Cont
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.childFields_Product(ctx, field)
+			return ec.childFields_ProductResponse(ctx, field)
 		},
 	}
 	defer func() {
@@ -705,8 +658,8 @@ func (ec *executionContext) _Mutation_updateProduct(ctx context.Context, field g
 			return ec.Resolvers.Mutation().UpdateProduct(ctx, fc.Args["id"].(string), fc.Args["input"].(model.UpdateProductInput))
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *entities.Product) graphql.Marshaler {
-			return ec.marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProduct(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v *model.ProductResponse) graphql.Marshaler {
+			return ec.marshalNProductResponse2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProductResponse(ctx, selections, v)
 		},
 		true,
 		true,
@@ -719,7 +672,7 @@ func (ec *executionContext) fieldContext_Mutation_updateProduct(ctx context.Cont
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.childFields_Product(ctx, field)
+			return ec.childFields_ProductResponse(ctx, field)
 		},
 	}
 	defer func() {
@@ -749,8 +702,8 @@ func (ec *executionContext) _Mutation_deleteProduct(ctx context.Context, field g
 			return ec.Resolvers.Mutation().DeleteProduct(ctx, fc.Args["id"].(string))
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *model.DeleteProductResponse) graphql.Marshaler {
-			return ec.marshalNDeleteProductResponse2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐDeleteProductResponse(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v *model.ProductResponse) graphql.Marshaler {
+			return ec.marshalNProductResponse2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProductResponse(ctx, selections, v)
 		},
 		true,
 		true,
@@ -763,7 +716,7 @@ func (ec *executionContext) fieldContext_Mutation_deleteProduct(ctx context.Cont
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return ec.childFields_DeleteProductResponse(ctx, field)
+			return ec.childFields_ProductResponse(ctx, field)
 		},
 	}
 	defer func() {
@@ -893,6 +846,52 @@ func (ec *executionContext) _Product_createdAt(ctx context.Context, field graphq
 }
 func (ec *executionContext) fieldContext_Product_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	return graphql.NewScalarFieldContext("Product", field, false, false, errors.New("field of type String does not have child fields"))
+}
+
+func (ec *executionContext) _ProductResponse_success(ctx context.Context, field graphql.CollectedField, obj *model.ProductResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_ProductResponse_success(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Success, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v bool) graphql.Marshaler {
+			return ec.marshalNBoolean2bool(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_ProductResponse_success(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("ProductResponse", field, false, false, errors.New("field of type Boolean does not have child fields"))
+}
+
+func (ec *executionContext) _ProductResponse_message(ctx context.Context, field graphql.CollectedField, obj *model.ProductResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return ec.fieldContext_ProductResponse_message(ctx, field)
+		},
+		func(ctx context.Context) (any, error) {
+			return obj.Message, nil
+		},
+		nil,
+		func(ctx context.Context, selections ast.SelectionSet, v string) graphql.Marshaler {
+			return ec.marshalNString2string(ctx, selections, v)
+		},
+		true,
+		true,
+	)
+}
+func (ec *executionContext) fieldContext_ProductResponse_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	return graphql.NewScalarFieldContext("ProductResponse", field, false, false, errors.New("field of type String does not have child fields"))
 }
 
 func (ec *executionContext) _Query_product(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2117,7 +2116,7 @@ func (ec *executionContext) unmarshalInputCreateProductInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "price", "stock", "createdAt"}
+	fieldsInOrder := [...]string{"name", "price", "stock"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2145,13 +2144,6 @@ func (ec *executionContext) unmarshalInputCreateProductInput(ctx context.Context
 				return it, err
 			}
 			it.Stock = data
-		case "createdAt":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.CreatedAt = data
 		}
 	}
 	return it, nil
@@ -2201,49 +2193,6 @@ func (ec *executionContext) unmarshalInputUpdateProductInput(ctx context.Context
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
-
-var deleteProductResponseImplementors = []string{"DeleteProductResponse"}
-
-func (ec *executionContext) _DeleteProductResponse(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteProductResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, deleteProductResponseImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferredFieldSet := graphql.NewFieldSet(nil)
-	deferLabelToView := make(map[string]*graphql.FieldSetView)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("DeleteProductResponse")
-		case "success":
-			out.Values[i] = ec._DeleteProductResponse_success(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "message":
-			out.Values[i] = ec._DeleteProductResponse_message(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
-
-	ec.ProcessDeferredGroup(graphql.DeferredGroup{
-		Defers:   deferLabelToView,
-		Path:     graphql.GetPath(ctx),
-		FieldSet: deferredFieldSet,
-		Context:  ctx,
-	})
-
-	return out
-}
 
 var mutationImplementors = []string{"Mutation"}
 
@@ -2341,6 +2290,49 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "createdAt":
 			out.Values[i] = ec._Product_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(min(len(deferLabelToView), math.MaxInt32)))
+
+	ec.ProcessDeferredGroup(graphql.DeferredGroup{
+		Defers:   deferLabelToView,
+		Path:     graphql.GetPath(ctx),
+		FieldSet: deferredFieldSet,
+		Context:  ctx,
+	})
+
+	return out
+}
+
+var productResponseImplementors = []string{"ProductResponse"}
+
+func (ec *executionContext) _ProductResponse(ctx context.Context, sel ast.SelectionSet, obj *model.ProductResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, productResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferredFieldSet := graphql.NewFieldSet(nil)
+	deferLabelToView := make(map[string]*graphql.FieldSetView)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProductResponse")
+		case "success":
+			out.Values[i] = ec._ProductResponse_success(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "message":
+			out.Values[i] = ec._ProductResponse_message(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -2877,20 +2869,6 @@ func (ec *executionContext) unmarshalNCreateProductInput2githubᚗcomᚋJiroFg�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNDeleteProductResponse2githubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐDeleteProductResponse(ctx context.Context, sel ast.SelectionSet, v model.DeleteProductResponse) graphql.Marshaler {
-	return ec._DeleteProductResponse(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNDeleteProductResponse2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐDeleteProductResponse(ctx context.Context, sel ast.SelectionSet, v *model.DeleteProductResponse) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._DeleteProductResponse(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v any) (float64, error) {
 	res, err := graphql.UnmarshalFloatContext(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2939,10 +2917,6 @@ func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) marshalNProduct2githubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProduct(ctx context.Context, sel ast.SelectionSet, v entities.Product) graphql.Marshaler {
-	return ec._Product(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*entities.Product) graphql.Marshaler {
 	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
 		fc := graphql.GetFieldContext(ctx)
@@ -2967,6 +2941,20 @@ func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑ
 		return graphql.Null
 	}
 	return ec._Product(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNProductResponse2githubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProductResponse(ctx context.Context, sel ast.SelectionSet, v model.ProductResponse) graphql.Marshaler {
+	return ec._ProductResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNProductResponse2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProductResponse(ctx context.Context, sel ast.SelectionSet, v *model.ProductResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ProductResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
