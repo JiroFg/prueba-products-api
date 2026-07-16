@@ -25,7 +25,7 @@ func (p *Product) Validate() error {
 			Message:   "No puede ser menor o igual a cero",
 		}
 	}
-	if p.Stock < 0 {
+	if p.Stock <= 0 {
 		return &exceptions.FieldError{
 			FieldName: "Stock",
 			Message:   "No puede ser menor o igual a cero",
