@@ -13,15 +13,15 @@ type MemoryProductRepository struct {
 	products []*entities.Product
 }
 
-func NewMemoryProductRepository() *MemoryProductRepository {
+func NewMemoryProductRepository(products ...*entities.Product) *MemoryProductRepository {
 	return &MemoryProductRepository{
-		products: []*entities.Product{},
+		products: products,
 	}
 }
 
 func (r *MemoryProductRepository) GetProducts(ctx context.Context) ([]*entities.Product, error) {
 	r.mu.RLock()
-	defer r.mu.Unlock()
+	defer r.mu.RUnlock()
 	products := make([]*entities.Product, len(r.products))
 	copy(products, r.products)
 	return products, nil
@@ -29,7 +29,7 @@ func (r *MemoryProductRepository) GetProducts(ctx context.Context) ([]*entities.
 
 func (r *MemoryProductRepository) GetProduct(ctx context.Context, id string) (*entities.Product, error) {
 	r.mu.RLock()
-	defer r.mu.Unlock()
+	defer r.mu.RUnlock()
 	for _, product := range r.products {
 		if product.ID == id {
 			return product, nil
