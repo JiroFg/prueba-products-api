@@ -1,6 +1,6 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - internal/delivery/graph/*.graphqls
+  - graph/*.graphqls
 
 # Where should the generated server code go?
 exec:
@@ -193,3 +193,6 @@ models:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
+  Product:
+    model:
+      - github.com/JiroFg/prueba-products-api/internal/domain/entities.Product

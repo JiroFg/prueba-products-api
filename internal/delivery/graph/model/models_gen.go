@@ -17,14 +17,6 @@ type DeleteProductResponse struct {
 type Mutation struct {
 }
 
-type Product struct {
-	ID        string  `json:"id"`
-	Name      string  `json:"name"`
-	Price     float64 `json:"price"`
-	Stock     int32   `json:"stock"`
-	CreatedAt string  `json:"createdAt"`
-}
-
 type Query struct {
 }
 

@@ -5,7 +5,6 @@ package graph
 import (
 	"bytes"
 	"context"
-	"embed"
 	"errors"
 	"fmt"
 	"math"
@@ -15,6 +14,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/JiroFg/prueba-products-api/internal/delivery/graph/model"
+	"github.com/JiroFg/prueba-products-api/internal/domain/entities"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -67,13 +67,13 @@ type ComplexityRoot struct {
 // region    ************************** generated!.gotpl **************************
 
 type MutationResolver interface {
-	CreateProduct(ctx context.Context, input model.CreateProductInput) (*model.Product, error)
-	UpdateProduct(ctx context.Context, id string, input model.UpdateProductInput) (*model.Product, error)
+	CreateProduct(ctx context.Context, input model.CreateProductInput) (*entities.Product, error)
+	UpdateProduct(ctx context.Context, id string, input model.UpdateProductInput) (*entities.Product, error)
 	DeleteProduct(ctx context.Context, id string) (*model.DeleteProductResponse, error)
 }
 type QueryResolver interface {
-	Product(ctx context.Context, id string) (*model.Product, error)
-	Products(ctx context.Context) ([]*model.Product, error)
+	Product(ctx context.Context, id string) (*entities.Product, error)
+	Products(ctx context.Context) ([]*entities.Product, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -274,19 +274,47 @@ func newExecutionContext(
 	}
 }
 
-//go:embed "product.graphqls"
-var sourcesFS embed.FS
+var sources = []*ast.Source{
+	{Name: "../../../graph/product.graphqls", Input: `# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
 
-func sourceData(filename string) string {
-	data, err := sourcesFS.ReadFile(filename)
-	if err != nil {
-		panic(fmt.Sprintf("codegen problem: %s not available", filename))
-	}
-	return string(data)
+type Product {
+  id: ID!
+  name: String!
+  price: Float!
+  stock: Int!
+  createdAt: String!
 }
 
-var sources = []*ast.Source{
-	{Name: "product.graphqls", Input: sourceData("product.graphqls"), BuiltIn: false},
+type Query {
+  product(id: ID!): Product
+  products: [Product!]!
+}
+
+input CreateProductInput {
+  name: String!
+  price: Float!
+  stock: Int!
+  createdAt: String!
+}
+
+input UpdateProductInput {
+  name: String
+  price: Float
+}
+
+type DeleteProductResponse {
+  success: Boolean!
+  message: String!
+}
+
+type Mutation {
+  createProduct(input: CreateProductInput!): Product!
+  updateProduct(id: ID!, input: UpdateProductInput!): Product!
+  deleteProduct(id: ID!): DeleteProductResponse!
+}
+`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -633,8 +661,8 @@ func (ec *executionContext) _Mutation_createProduct(ctx context.Context, field g
 			return ec.Resolvers.Mutation().CreateProduct(ctx, fc.Args["input"].(model.CreateProductInput))
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *model.Product) graphql.Marshaler {
-			return ec.marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProduct(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v *entities.Product) graphql.Marshaler {
+			return ec.marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProduct(ctx, selections, v)
 		},
 		true,
 		true,
@@ -677,8 +705,8 @@ func (ec *executionContext) _Mutation_updateProduct(ctx context.Context, field g
 			return ec.Resolvers.Mutation().UpdateProduct(ctx, fc.Args["id"].(string), fc.Args["input"].(model.UpdateProductInput))
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *model.Product) graphql.Marshaler {
-			return ec.marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProduct(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v *entities.Product) graphql.Marshaler {
+			return ec.marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProduct(ctx, selections, v)
 		},
 		true,
 		true,
@@ -752,7 +780,7 @@ func (ec *executionContext) fieldContext_Mutation_deleteProduct(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *entities.Product) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
@@ -775,7 +803,7 @@ func (ec *executionContext) fieldContext_Product_id(_ context.Context, field gra
 	return graphql.NewScalarFieldContext("Product", field, false, false, errors.New("field of type ID does not have child fields"))
 }
 
-func (ec *executionContext) _Product_name(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_name(ctx context.Context, field graphql.CollectedField, obj *entities.Product) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
@@ -798,7 +826,7 @@ func (ec *executionContext) fieldContext_Product_name(_ context.Context, field g
 	return graphql.NewScalarFieldContext("Product", field, false, false, errors.New("field of type String does not have child fields"))
 }
 
-func (ec *executionContext) _Product_price(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_price(ctx context.Context, field graphql.CollectedField, obj *entities.Product) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
@@ -821,7 +849,7 @@ func (ec *executionContext) fieldContext_Product_price(_ context.Context, field 
 	return graphql.NewScalarFieldContext("Product", field, false, false, errors.New("field of type Float does not have child fields"))
 }
 
-func (ec *executionContext) _Product_stock(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_stock(ctx context.Context, field graphql.CollectedField, obj *entities.Product) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
@@ -844,7 +872,7 @@ func (ec *executionContext) fieldContext_Product_stock(_ context.Context, field 
 	return graphql.NewScalarFieldContext("Product", field, false, false, errors.New("field of type Int does not have child fields"))
 }
 
-func (ec *executionContext) _Product_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+func (ec *executionContext) _Product_createdAt(ctx context.Context, field graphql.CollectedField, obj *entities.Product) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
@@ -880,8 +908,8 @@ func (ec *executionContext) _Query_product(ctx context.Context, field graphql.Co
 			return ec.Resolvers.Query().Product(ctx, fc.Args["id"].(string))
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v *model.Product) graphql.Marshaler {
-			return ec.marshalOProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProduct(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v *entities.Product) graphql.Marshaler {
+			return ec.marshalOProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProduct(ctx, selections, v)
 		},
 		true,
 		false,
@@ -923,8 +951,8 @@ func (ec *executionContext) _Query_products(ctx context.Context, field graphql.C
 			return ec.Resolvers.Query().Products(ctx)
 		},
 		nil,
-		func(ctx context.Context, selections ast.SelectionSet, v []*model.Product) graphql.Marshaler {
-			return ec.marshalNProduct2ᚕᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProductᚄ(ctx, selections, v)
+		func(ctx context.Context, selections ast.SelectionSet, v []*entities.Product) graphql.Marshaler {
+			return ec.marshalNProduct2ᚕᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProductᚄ(ctx, selections, v)
 		},
 		true,
 		true,
@@ -2281,7 +2309,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 var productImplementors = []string{"Product"}
 
-func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, obj *model.Product) graphql.Marshaler {
+func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, obj *entities.Product) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, productImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -2911,15 +2939,15 @@ func (ec *executionContext) marshalNInt2int32(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) marshalNProduct2githubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProduct(ctx context.Context, sel ast.SelectionSet, v model.Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2githubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProduct(ctx context.Context, sel ast.SelectionSet, v entities.Product) graphql.Marshaler {
 	return ec._Product(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*entities.Product) graphql.Marshaler {
 	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
 		fc := graphql.GetFieldContext(ctx)
 		fc.Result = &v[i]
-		return ec.marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProduct(ctx, sel, v[i])
+		return ec.marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProduct(ctx, sel, v[i])
 	})
 
 	for _, e := range ret {
@@ -2931,7 +2959,7 @@ func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋJiroFgᚋprueba
 	return ret
 }
 
-func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProduct(ctx context.Context, sel ast.SelectionSet, v *model.Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProduct(ctx context.Context, sel ast.SelectionSet, v *entities.Product) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
@@ -3149,7 +3177,7 @@ func (ec *executionContext) marshalOFloat2ᚖfloat64(ctx context.Context, sel as
 	return graphql.WrapContextMarshaler(ctx, res)
 }
 
-func (ec *executionContext) marshalOProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdeliveryᚋgraphᚋmodelᚐProduct(ctx context.Context, sel ast.SelectionSet, v *model.Product) graphql.Marshaler {
+func (ec *executionContext) marshalOProduct2ᚖgithubᚗcomᚋJiroFgᚋpruebaᚑproductsᚑapiᚋinternalᚋdomainᚋentitiesᚐProduct(ctx context.Context, sel ast.SelectionSet, v *entities.Product) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
