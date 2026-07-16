@@ -11,6 +11,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/JiroFg/prueba-products-api/internal/delivery/graph"
+	"github.com/JiroFg/prueba-products-api/internal/repository"
+	"github.com/JiroFg/prueba-products-api/internal/usecases"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -21,8 +23,14 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	// inyection de dependencias
+	productRepository := repository.NewMemoryProductRepository()
+	productUseCase := usecases.NewProductUseCase(productRepository)
+	srv := handler.New(graph.NewExecutableSchema(
+		graph.Config{Resolvers: &graph.Resolver{
+			ProductUseCase: productUseCase,
+		}},
+	))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})

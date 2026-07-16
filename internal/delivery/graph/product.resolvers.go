@@ -7,35 +7,72 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/JiroFg/prueba-products-api/internal/delivery/graph/model"
 	"github.com/JiroFg/prueba-products-api/internal/domain/entities"
 )
 
 // CreateProduct is the resolver for the createProduct field.
-func (r *mutationResolver) CreateProduct(ctx context.Context, input model.CreateProductInput) (*entities.Product, error) {
-	panic(fmt.Errorf("not implemented: CreateProduct - createProduct"))
+func (r *mutationResolver) CreateProduct(ctx context.Context, input model.CreateProductInput) (*model.ProductResponse, error) {
+	err := r.ProductUseCase.CreateProduct(ctx, input.Name, input.Price, input.Stock)
+	if err != nil {
+		return &model.ProductResponse{
+			Success: false,
+			Message: "Error al crear el producto",
+		}, err
+	}
+	return &model.ProductResponse{
+		Success: true,
+		Message: "Producto creado correctamente",
+	}, nil
 }
 
 // UpdateProduct is the resolver for the updateProduct field.
-func (r *mutationResolver) UpdateProduct(ctx context.Context, id string, input model.UpdateProductInput) (*entities.Product, error) {
-	panic(fmt.Errorf("not implemented: UpdateProduct - updateProduct"))
+func (r *mutationResolver) UpdateProduct(ctx context.Context, id string, input model.UpdateProductInput) (*model.ProductResponse, error) {
+	err := r.ProductUseCase.UpdateProduct(ctx, id, input.Name, input.Price)
+	if err != nil {
+		return &model.ProductResponse{
+			Success: false,
+			Message: "Error al actualizar el producto",
+		}, err
+	}
+	return &model.ProductResponse{
+		Success: true,
+		Message: "Producto actualizado correctamente",
+	}, nil
 }
 
 // DeleteProduct is the resolver for the deleteProduct field.
-func (r *mutationResolver) DeleteProduct(ctx context.Context, id string) (*model.DeleteProductResponse, error) {
-	panic(fmt.Errorf("not implemented: DeleteProduct - deleteProduct"))
+func (r *mutationResolver) DeleteProduct(ctx context.Context, id string) (*model.ProductResponse, error) {
+	err := r.ProductUseCase.DeleteProduct(ctx, id)
+	if err != nil {
+		return &model.ProductResponse{
+			Success: false,
+			Message: "Error al eliminar el producto",
+		}, err
+	}
+	return &model.ProductResponse{
+		Success: true,
+		Message: "Producto eliminado correctamente",
+	}, nil
 }
 
 // Product is the resolver for the product field.
 func (r *queryResolver) Product(ctx context.Context, id string) (*entities.Product, error) {
-	panic(fmt.Errorf("not implemented: Product - product"))
+	product, err := r.ProductUseCase.GetProduct(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return product, nil
 }
 
 // Products is the resolver for the products field.
 func (r *queryResolver) Products(ctx context.Context) ([]*entities.Product, error) {
-	panic(fmt.Errorf("not implemented: Products - products"))
+	products, err := r.ProductUseCase.GetProducts(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return products, nil
 }
 
 // Mutation returns MutationResolver implementation.
