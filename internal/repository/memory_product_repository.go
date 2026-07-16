@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/JiroFg/prueba-products-api/internal/domain/entities"
 	"github.com/JiroFg/prueba-products-api/internal/domain/exceptions"
@@ -16,15 +17,17 @@ type MemoryProductRepository struct {
 func NewMemoryProductRepository() *MemoryProductRepository {
 	products := []*entities.Product{
 		{
-			ID:    "1",
-			Name:  "Laptop",
-			Price: 999.99,
-			Stock: 10,
+			ID:        "1",
+			Name:      "Laptop",
+			Price:     999.99,
+			Stock:     10,
+			CreatedAt: time.Now().Format(time.RFC3339),
 		}, {
-			ID:    "2",
-			Name:  "Mouse",
-			Price: 19.99,
-			Stock: 50,
+			ID:        "2",
+			Name:      "Mouse",
+			Price:     19.99,
+			Stock:     50,
+			CreatedAt: time.Now().Format(time.RFC3339),
 		},
 	}
 	return &MemoryProductRepository{
