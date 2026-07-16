@@ -48,7 +48,7 @@ func (r *MemoryProductRepository) CreateProduct(ctx context.Context, product *en
 	return nil
 }
 
-func (r *MemoryProductRepository) UpdateProduct(ctx context.Context, id string, updateProduct *entities.UpdateProduct) (*entities.Product, error) {
+func (r *MemoryProductRepository) UpdateProduct(ctx context.Context, id string, updateProduct *entities.UpdateProduct) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	for _, product := range r.products {
@@ -59,10 +59,10 @@ func (r *MemoryProductRepository) UpdateProduct(ctx context.Context, id string, 
 			if updateProduct.Price != nil {
 				product.Price = *updateProduct.Price
 			}
-			return product, nil
+			return nil
 		}
 	}
-	return nil, &exceptions.NotFoundError{
+	return &exceptions.NotFoundError{
 		ElementName: "Product",
 		ElementId:   id,
 	}
