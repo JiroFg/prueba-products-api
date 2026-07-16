@@ -27,3 +27,13 @@ type UpdateProduct struct {
 	Name  *string
 	Price *float64
 }
+
+func (u *UpdateProduct) Validate() error {
+	if *u.Name == "" {
+		return errors.New("Name requerido")
+	}
+	if *u.Price <= 0 {
+		return errors.New("Price no puede ser menor o igual a cero")
+	}
+	return nil
+}
