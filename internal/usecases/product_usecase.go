@@ -3,6 +3,7 @@ package usecases
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/JiroFg/prueba-products-api/internal/domain/entities"
@@ -37,14 +38,19 @@ func (p *ProductUseCase) GetProduct(ctx context.Context, id string) (*entities.P
 
 func (p *ProductUseCase) CreateProduct(ctx context.Context, name string, price float64, stock int32) error {
 	products, _ := p.repo.GetProducts(ctx)
+	stringLastId := products[len(products)-1].ID
+	lastId, err := strconv.Atoi(stringLastId)
+	if err != nil {
+		return err
+	}
 	newProduct := &entities.Product{
-		ID:        fmt.Sprint(len(products)),
+		ID:        fmt.Sprint(lastId + 1),
 		Name:      name,
 		Price:     price,
 		Stock:     stock,
 		CreatedAt: time.Now().String(),
 	}
-	err := newProduct.Validate()
+	err = newProduct.Validate()
 	if err != nil {
 		return err
 	}
