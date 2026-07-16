@@ -89,3 +89,12 @@ func TestUpdateProduct(t *testing.T) {
 		t.Fatal("Hay menos de 3 productos en el repositorio")
 	}
 }
+
+// test cuando eliminamos un producto
+func TestDeleteProduct(t *testing.T) {
+	repo := repository.NewMemoryProductRepository()
+	err := repo.DeleteProduct(t.Context(), "1")
+	if err != nil {
+		t.Fatalf("Se obtuvo un error %T", err)
+	}
+}
