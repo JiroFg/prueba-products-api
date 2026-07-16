@@ -1,0 +1,12 @@
+services:
+  main:
+    container_name: products_api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+    environment:
+      TZ: America/Mexico_City
