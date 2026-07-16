@@ -13,7 +13,20 @@ type MemoryProductRepository struct {
 	products []*entities.Product
 }
 
-func NewMemoryProductRepository(products ...*entities.Product) *MemoryProductRepository {
+func NewMemoryProductRepository() *MemoryProductRepository {
+	products := []*entities.Product{
+		{
+			ID:    "1",
+			Name:  "Laptop",
+			Price: 999.99,
+			Stock: 10,
+		}, {
+			ID:    "2",
+			Name:  "Mouse",
+			Price: 19.99,
+			Stock: 50,
+		},
+	}
 	return &MemoryProductRepository{
 		products: products,
 	}

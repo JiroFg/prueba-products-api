@@ -10,27 +10,9 @@ import (
 	"github.com/JiroFg/prueba-products-api/internal/repository"
 )
 
-// funcion setup para inicializar el repo con algunos valores
-func setup() *repository.MemoryProductRepository {
-	return repository.NewMemoryProductRepository(
-		&entities.Product{
-			ID:    "1",
-			Name:  "Laptop",
-			Price: 999.99,
-			Stock: 10,
-		},
-		&entities.Product{
-			ID:    "2",
-			Name:  "Mouse",
-			Price: 19.99,
-			Stock: 50,
-		},
-	)
-}
-
 // test cuando hay dos productos que se obtuvieron correctamente
 func TestGetProducts(t *testing.T) {
-	repo := setup()
+	repo := repository.NewMemoryProductRepository()
 	products, err := repo.GetProducts(t.Context())
 	if len(products) < 2 {
 		t.Fatal("Hay menos de 2 productos en el repositorio")
@@ -42,7 +24,7 @@ func TestGetProducts(t *testing.T) {
 
 // test cuando obtenemos un producto en especifico por ID
 func TestGetProduct(t *testing.T) {
-	repo := setup()
+	repo := repository.NewMemoryProductRepository()
 	product, err := repo.GetProduct(t.Context(), "1")
 	if product.ID != "1" {
 		t.Fatal("No se obtuvo el elemento esperado")
@@ -54,7 +36,7 @@ func TestGetProduct(t *testing.T) {
 
 // test cuando no se encontro el producto
 func TestGetProductNotFound(t *testing.T) {
-	repo := setup()
+	repo := repository.NewMemoryProductRepository()
 	product, err := repo.GetProduct(t.Context(), "3")
 	if product != nil {
 		t.Fatal("Se esperaba nil")
@@ -70,7 +52,7 @@ func TestGetProductNotFound(t *testing.T) {
 
 // test cuando creamos un producto nuevo
 func TestCreateProduct(t *testing.T) {
-	repo := setup()
+	repo := repository.NewMemoryProductRepository()
 	newProduct := &entities.Product{
 		ID:        "3",
 		Name:      "Keyboard",
@@ -90,7 +72,7 @@ func TestCreateProduct(t *testing.T) {
 
 // test cuando actualizamos un producto
 func TestUpdateProduct(t *testing.T) {
-	repo := setup()
+	repo := repository.NewMemoryProductRepository()
 	newProduct := &entities.Product{
 		ID:        "3",
 		Name:      "Keyboard",

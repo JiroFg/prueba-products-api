@@ -51,10 +51,10 @@ func (p *ProductUseCase) CreateProduct(ctx context.Context, name string, price f
 	return p.repo.CreateProduct(ctx, newProduct)
 }
 
-func (p *ProductUseCase) UpdateProduct(ctx context.Context, id string, name string, price float64) error {
+func (p *ProductUseCase) UpdateProduct(ctx context.Context, id string, name *string, price *float64) error {
 	updateProduct := &entities.UpdateProduct{
-		Name:  &name,
-		Price: &price,
+		Name:  name,
+		Price: price,
 	}
 	err := updateProduct.Validate()
 	if err != nil {
